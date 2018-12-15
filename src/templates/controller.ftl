@@ -1,5 +1,10 @@
 package ${packagePath}.controller;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 import xin.kingsman.VO.JsonDataResult;
 import xin.kingsman.pojo.${TableName};
 import xin.kingsman.pojo.${TableName}Example;
+import xin.kingsman.pojo.${TableName}Example.Criteria;
 import xin.kingsman.service.${TableName}Service;
 
 @RestController
@@ -30,6 +36,18 @@ public class ${TableName}Controller {
 		return new JsonDataResult();
 	}
 
+	@RequestMapping(value = "/get${TableName}ById")
+	private JsonDataResult get${TableName}ById(String ${tableName}Id) {
+		${TableName} ${tableName};
+		try {
+			 ${tableName} = ${tableName}Service.get${TableName}ById(${tableName}Id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new JsonDataResult().err();
+		}
+		return new JsonDataResult(${tableName});
+	}
+	
 	@RequestMapping("/del${TableName}")
 	private JsonDataResult del${TableName}(String id) {
 		try {
@@ -42,8 +60,19 @@ public class ${TableName}Controller {
 	}
 
 	@RequestMapping("/select${TableName}")
-	private JsonDataResult select${TableName}(Integer pageNumber, Integer pageSize) {
+	private JsonDataResult select${TableName}(Integer pageNumber, Integer pageSize,HttpServletRequest request) throws UnsupportedEncodingException {
 		${TableName}Example ${tableName}Example = new ${TableName}Example();
+		Criteria createCriteria = ${tableName}Example.createCriteria();
+		String name = request.getParameter("name");
+		if(StringUtils.isNotBlank(name)) {
+			name=new String(name.getBytes("iso8859-1"),"UTF-8");
+			createCriteria.andNameLike(name+"%");
+		}
+		
+		<#list field as fieldList>
+			${field}
+		</#list>
+		
 		PageInfo<${TableName}> select${TableName}PageInfoByExample = ${tableName}Service.select${TableName}PageInfoByExample(pageNumber,
 				pageSize, ${tableName}Example);
 		return new JsonDataResult(select${TableName}PageInfoByExample);
