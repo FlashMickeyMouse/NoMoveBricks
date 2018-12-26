@@ -1,5 +1,4 @@
 package justDoIt;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +15,9 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import justDoIt.FreemarkerDoIt;
+
 
 /**
  * @author songhao
@@ -64,7 +66,7 @@ public class NoMovebricksGenerator {
 			Node item = tableList.item(i);
 			String camelName = camelName(item.getAttributes().getNamedItem("tableName").getNodeValue());
 			System.out.println(camelName);
-			Map<String, String> dataMap = new HashMap<String, String>();
+			Map<String, Object> dataMap = new HashMap<String, Object>();
 			dataMap.put("packagePath", packagePath);
 			dataMap.put("TableName", camelName.substring(0, 1).toUpperCase() + camelName.substring(1));
 			dataMap.put("tableName", camelName);

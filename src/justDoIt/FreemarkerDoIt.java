@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +26,7 @@ public class FreemarkerDoIt {
     private static final String TEMPLATE_PATH = "src/templates";
     private static final String CLASS_PATH = "src";
     
-    public static void doIt(Map<String, String> dataMap) {
+    public static void doIt(Map<String, Object> dataMap) {
         // step1 创建freeMarker配置实例
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
         Writer out = null;
@@ -50,6 +52,24 @@ public class FreemarkerDoIt {
 			}
             File controllerFile = new File(controllerDocPath +"/"+dataMap.get("TableName") +"Controller.java");
             out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(controllerFile),"UTF-8"));
+            //在此之前注入查询条件数据
+            ArrayList<String> arrayList = new ArrayList<>();
+            Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass("yxzb.org.cn.pojo."+dataMap.get("TableName"));
+			System.out.println(clazz);
+			Method[] sourceMethods = clazz.getMethods();
+			for(int i=0;i<sourceMethods.length;i++){
+			  if(sourceMethods[i].getName().startsWith("get")){
+			    String lsName = sourceMethods[i].getName().substring(3);   // 属性
+			    if("Id".equals(lsName)||"Class".equals(lsName)) {
+			    	
+			    }else {
+			    	arrayList.add(lsName.substring(0, 1).toLowerCase() + lsName.substring(1));
+			    	System.out.println(lsName.substring(0, 1).toLowerCase() + lsName.substring(1));
+			    }
+			    
+			  }
+			} 
+			dataMap.put("fieldList", arrayList);
             // step6 输出文件
             template.process(dataMap, out);
             
@@ -75,6 +95,19 @@ public class FreemarkerDoIt {
 			}
             File serviceImplFile = new File(serviceImplDocPath +"/"+dataMap.get("TableName") +"ServiceImpl.java");
             out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(serviceImplFile)));
+            // step6 输出文件
+            template.process(dataMap, out);
+            
+            
+
+            template = configuration.getTemplate("tablehtml.ftl");
+            String tablehtmlDocPath =docPath+"/html";
+             file = new File(tablehtmlDocPath);
+            if (!file.isDirectory()) {
+            	file.mkdirs();
+			}
+            File tablehtmlFile = new File(tablehtmlDocPath +"/"+dataMap.get("TableName") +".html");
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tablehtmlFile)));
             // step6 输出文件
             template.process(dataMap, out);
             

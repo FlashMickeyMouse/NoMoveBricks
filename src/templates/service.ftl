@@ -48,5 +48,6 @@ public interface ${TableName}Service {
 	int delete${TableName}ById(${TableName} ${tableName});
 
 	int delete${TableName}ByExample(${TableName}Example ${tableName}Example);
-
+	
+	${TableName} get${TableName}ById(String id);
 }

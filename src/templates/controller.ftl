@@ -63,16 +63,13 @@ public class ${TableName}Controller {
 	private JsonDataResult select${TableName}(Integer pageNumber, Integer pageSize,HttpServletRequest request) throws UnsupportedEncodingException {
 		${TableName}Example ${tableName}Example = new ${TableName}Example();
 		Criteria createCriteria = ${tableName}Example.createCriteria();
-		String name = request.getParameter("name");
-		if(StringUtils.isNotBlank(name)) {
-			name=new String(name.getBytes("iso8859-1"),"UTF-8");
-			createCriteria.andNameLike(name+"%");
+		<#list fieldList  as field>
+		String ${field} = request.getParameter("${field}");
+		if(StringUtils.isNotBlank(${field})) {
+			${field}=new String(${field}.getBytes("iso8859-1"),"UTF-8");
+			createCriteria.and${field?cap_first}Like(${field}+"%");
 		}
-		
-		<#list field as fieldList>
-			${field}
 		</#list>
-		
 		PageInfo<${TableName}> select${TableName}PageInfoByExample = ${tableName}Service.select${TableName}PageInfoByExample(pageNumber,
 				pageSize, ${tableName}Example);
 		return new JsonDataResult(select${TableName}PageInfoByExample);

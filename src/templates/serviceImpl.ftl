@@ -135,5 +135,10 @@ public class ${TableName}ServiceImpl implements ${TableName}Service {
 	public int delete${TableName}ByExample(${TableName}Example ${tableName}Example) {
 		return ${tableName}Mapper.deleteByExample(${tableName}Example);
 	}
+	
+	@Override
+	public ${TableName} get${TableName}ById(String id) {
+		return ${tableName}Mapper.selectByPrimaryKey(id);
+	}
 
 }
